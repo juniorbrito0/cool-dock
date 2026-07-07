@@ -1,0 +1,19 @@
+included:
+  - Sources
+disabled_rules:
+  - todo
+  - trailing_comma
+opt_in_rules:
+  - empty_count
+  - closure_spacing
+line_length:
+  warning: 140
+  error: 200
+identifier_name:
+  min_length: 1
+  excluded: [id, x, y]
+type_name:
+  min_length: 2
+type_body_length:
+  warning: 320
+  error: 420

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dock+ — your smart second Dock for macOS</title>
+  <meta name="description" content="Dock+ is a floating second Dock of live widgets beside your macOS Dock — weather, music, calendar, mail, system stats, 1Password and more. On-device and data-light." />
+  <link rel="stylesheet" href="styles.css" />
+<style id="itw-gate">
+/* Temporary pre-launch state — blur the page, block links, show a label. */
+html::before{content:"";position:fixed;inset:0;z-index:2147483000;background:rgba(9,11,16,.5);-webkit-backdrop-filter:blur(10px) saturate(115%);backdrop-filter:blur(10px) saturate(115%);}
+html,body{overflow:hidden !important;}
+body::after{content:"🚧  Dock+ is in the works\A Coming soon — check back shortly.";white-space:pre-line;text-align:center;line-height:1.6;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2147483001;pointer-events:none;max-width:min(90vw,440px);padding:26px 34px;border-radius:20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;font-size:clamp(16px,2.6vw,21px);font-weight:600;letter-spacing:.01em;color:#fff;background:rgba(18,20,27,.92);border:1px solid rgba(255,255,255,.16);box-shadow:0 24px 70px rgba(0,0,0,.5);}
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="index.html"><span class="brand-mark"></span> Dock+</a>
+      <nav class="nav-links">
+        <a href="index.html" class="active">Features</a>
+        <a href="widgets.html">Widgets</a>
+        <a href="instructions.html">Get started</a>
+        <a href="faq.html">FAQ</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+      <button class="theme-toggle" aria-label="Toggle light and dark theme" title="Toggle theme">◐</button>
+      <a href="#download" class="nav-cta">Download</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero wrap">
+      <span class="badge"><span class="dot"></span> macOS 14 Sonoma · on-device · no account</span>
+      <h1>Dock+ — your <span class="grad">smart second Dock</span></h1>
+      <p class="lede">A floating bar of live widgets that sits right beside your macOS Dock. Glance at the weather, skip a track, check your next meeting, copy a password — without ever opening an app.</p>
+      <div class="btn-row">
+        <a href="#download" class="btn btn-primary">Get Dock+</a>
+        <a href="widgets.html" class="btn btn-ghost">See all 14 widgets</a>
+      </div>
+
+      <!-- the floating dock visual -->
+      <div class="dock-stage" data-reveal>
+        <div class="dock-bar">
+          <div class="tile live"><span class="glyph">🕘</span><span class="mini">9:41</span></div>
+          <div class="tile wide live"><span class="glyph accent">🎧</span><span class="mini">Midnight City</span><span class="lbl">M83</span></div>
+          <div class="tile live"><span class="glyph">🌤️</span><span class="mini accent">21°</span></div>
+          <div class="tile"><span class="glyph">📅</span><span class="mini warn">11:00</span></div>
+          <div class="tile"><span class="glyph">✉️</span><span class="lbl">Inbox</span></div>
+          <div class="tile live"><span class="glyph">📊</span><span class="lbl">CPU 12%</span></div>
+          <div class="tile"><span class="glyph">🔋</span><span class="mini">88%</span></div>
+          <div class="tile"><span class="glyph">🔑</span><span class="lbl">1Password</span></div>
+          <div class="tile"><span class="glyph">😀</span><span class="lbl">Emoji</span></div>
+          <div class="tile"><span class="glyph accent">✦</span><span class="lbl">Claude</span></div>
+        </div>
+        <p class="dock-caption">A live preview — your real Dock+ updates as your day does.</p>
+      </div>
+    </section>
+
+    <!-- CORE IDEA -->
+    <section class="section wrap">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">The idea</span>
+        <h2>Your Dock holds apps. Dock+ holds <em>information</em>.</h2>
+        <p>The macOS Dock launches things. Dock+ adds a second, glanceable strip of live tiles next to it — the stuff you keep cmd-tabbing to check. It floats above everything, follows you across every Space, and gently lifts out of the way when an auto-hidden Dock reveals.</p>
+      </div>
+
+      <div class="grid grid-3">
+        <article class="card" data-reveal>
+          <div class="ico">🪟</div>
+          <h3>Floats beside the Dock</h3>
+          <p>A borderless glass panel pinned to your chosen screen edge, above every window, on all Spaces. It never steals focus and never shows up in cmd-tab.</p>
+        </article>
+        <article class="card" data-reveal>
+          <div class="ico">⚡</div>
+          <h3>Live, not static</h3>
+          <p>Weather, now-playing, CPU, battery and your next meeting refresh on their own. The electric-teal accent lights up only when a tile is active or live.</p>
+        </article>
+        <article class="card" data-reveal>
+          <div class="ico">🔒</div>
+          <h3>On-device by default</h3>
+          <p>No account, no analytics, no telemetry. The only thing that ever leaves your Mac is your approximate location, sent to Open-Meteo for the weather — and nothing else.</p>
+        </article>
+        <article class="card" data-reveal>
+          <div class="ico">🎛️</div>
+          <h3>Yours to arrange</h3>
+          <p>Toggle any of the 14 widgets on or off, pick the screen edge, and add your favorite apps. Keep a tight three-tile dock or run the full set.</p>
+        </article>
+        <article class="card" data-reveal>
+          <div class="ico">🤏</div>
+          <h3>Discreet minimize</h3>
+          <p>Collapse the whole bar to a slim handle when you want the screen back. One click brings it home.</p>
+        </article>
+        <article class="card" data-reveal>
+          <div class="ico">🍎</div>
+          <h3>Native &amp; light</h3>
+          <p>A small SwiftUI menu-bar app built for macOS 14 Sonoma. No Electron, no background bloat — it reads the system directly.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- WIDGETS SHOWCASE -->
+    <section class="section wrap">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">Widgets</span>
+        <h2>Fourteen widgets. One glance.</h2>
+        <p>Each tile does one useful thing well — and many are interactive, not just read-only. Control music, archive mail, paste an emoji, or copy a password without leaving the Dock.</p>
+      </div>
+
+      <div class="grid grid-3">
+        <article class="card" data-reveal><div class="ico">🕘</div><h3>Clock</h3><p>The time and date, always in view.</p></article>
+        <article class="card" data-reveal><div class="ico">🌤️</div><h3>Weather</h3><p>Local conditions via keyless Open-Meteo.</p></article>
+        <article class="card" data-reveal><div class="ico">🎧</div><h3>Music</h3><p>Now playing, controls &amp; your current playlist — Apple Music or Spotify.</p></article>
+        <article class="card" data-reveal><div class="ico">📅</div><h3>Calendar</h3><p>Your next event, color-coded by urgency.</p></article>
+        <article class="card" data-reveal><div class="ico">✉️</div><h3>Mail</h3><p>Last three in your inbox; archive or delete inline.</p></article>
+        <article class="card" data-reveal><div class="ico">🔑</div><h3>1Password</h3><p>Search and copy a password with Touch ID — fully local.</p></article>
+      </div>
+      <div class="btn-row" style="justify-content:center; margin-top: var(--s-7)">
+        <a href="widgets.html" class="btn btn-ghost">Browse the full catalog →</a>
+      </div>
+    </section>
+
+    <!-- DOWNLOAD / CTA -->
+    <section class="section wrap" id="download">
+      <div class="cta-band" data-reveal>
+        <span class="eyebrow" style="justify-content:center">Get Dock+</span>
+        <h2>Give your Dock a second brain.</h2>
+        <p class="lede">Dock+ is a native macOS 14 app. Download, drop it in Applications, grant a couple of permissions, and your second Dock is live.</p>
+        <div class="btn-row">
+          <a href="#" class="btn btn-primary">Download for macOS</a>
+          <a href="instructions.html" class="btn btn-ghost">Read the setup guide</a>
+        </div>
+        <p class="note" style="margin-top: var(--s-5)">Requires macOS 14 Sonoma or later · Apple silicon &amp; Intel</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <nav class="footer-links">
+        <a href="index.html">Features</a>
+        <a href="widgets.html">Widgets</a>
+        <a href="instructions.html">Get started</a>
+        <a href="faq.html">FAQ</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+      <p class="footer-credit">An app by <a href="https://brito.ai">brito.ai</a> · © 2026</p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

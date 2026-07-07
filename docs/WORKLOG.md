@@ -1,0 +1,127 @@
+# Cool Dock — Worklog
+
+## 2026-07-07 — transparency, clock fix, folders, Dia widget, login item, reminders scope
+- **Tile opacity follow-up:** dialing the white tile wash up/down read as "no change" because it's a faint wash over the already-frosted bar. Final fix: each `WidgetTile` (and the Folders tile, which rolls its own background) now gets its **own** `VisualEffectView(.hudWindow)` frosted backing clipped to the tile shape, so tiles read as solid cards against the 60%-transparent bar frame. `tileFill`/`tileFillHover` kept as a light definition wash (0.16/0.24).
+- **Repo:** initialized git + pushed to GitHub (private) as the first commit.
+- **Transparency:** widget tiles 30% more transparent (`tileFill` 0.06→0.042, hover 0.12→0.084); dock frame 60% more transparent (bar `VisualEffectView` `.opacity(0.4)` + black tint 0.18→0.072).
+- **Clock/Weather widget [FIXED wrap]:** "8:57 AM" was wrapping the "M". Time + temp fonts 14→12.5, time/temp forced single-line (`lineLimit(1)` + `fixedSize`), inter-block spacing tightened (HStack `sm`→`xs`). Verified: reads "9:21 AM" on one line.
+- **Folders:** double-click a folder tile → opens it in Finder (`FoldersService.reveal`); single click still toggles the contents popover. Contents popover taller (`maxHeight` 360→520, `minHeight` 220).
+- **Dock gap:** panel margin above the system Dock 8→2 so Dock+ sits closer.
+- **Dia Tabs widget [NEW]:** `DiaService` reads Dia's open tabs over AppleScript (Dia ships a scripting definition: windows→tabs with title/URL + `focus`), polling every 6s off the main thread via `osascript`. New `.diaTabs` widget kind (icon + tab count → popover list; click a tab to focus it in Dia). Added to registry, default order + curated default, started at launch. Broadened `NSAppleEventsUsageDescription`. Verified live: read 56 tabs. **Warp: not possible** — Warp ships no scripting definition / AppleScript support, so its tabs can't be read.
+- **Start at login [NEW]:** `LoginItemService` (SMAppService.mainApp) auto-enables on first run and self-heals the registered path on every launch (build-folder → /Applications). Toggle added to Settings ▸ General ▸ Startup. Verified via `sfltool dumpbtm`: enabled, URL `file:///Applications/Dock+.app/`.
+- **Reminders scope [NEW]:** picker in the widget popover to choose Today / All Lists / a specific list; persisted (`remindersScope`, default **Today** = due today or overdue, mirroring Apple's smart list). `RemindersService` loads lists via `store.calendars(for:.reminder)` and filters at query + client level.
+- Verified: xcodegen OK, SwiftLint 0, BUILD SUCCEEDED, installed to /Applications via ditto, relaunched, and confirmed each change on-screen (verification screenshots were kept out of git as they capture personal screen content).
+
+## 2026-06-30 — v0.1 scaffold + working second dock
+- Bootstrapped macOS app from global config: XcodeGen `project.yml`, Swift 6 strict concurrency, `ai.brito.cooldock`, `LSUIElement` agent app with `MenuBarExtra`.
+- Design system: `Theme` tokens (graphite glass + electric-teal accent reserved for live/active states), `VisualEffectView` vibrancy.
+- Floating dock: borderless non-activating `NSPanel` (`DockWindowController`) above the system Dock level, all Spaces, edge-selectable; hosts `DockView` glass bar of widget tiles, auto-sizes via `NSHostingController` intrinsic sizing.
+- Widgets (7), protocol-driven via `WidgetKind` + `WidgetRegistry`: Clock, Weather, System (CPU/RAM gauges), Battery, Calendar, App launcher, Quick actions.
+- Services (`@MainActor @Observable`, polling Tasks): mach `host_statistics`/`host_statistics64` for CPU/RAM, IOKit `IOPSCopyPowerSourcesInfo` for battery, CoreLocation + keyless Open-Meteo for weather, EventKit for next event, NSWorkspace for app launch/icons.
+- Settings window: toggle widgets, pick edge, add favorite apps; persisted in `UserDefaults` (`DockSettings`).
+- Fixes during build: snake_case→CodingKeys for Open-Meteo, `host_page_size` instead of concurrency-unsafe `vm_kernel_page_size`, CLLocationManager delegate reworked to pass only value types across the actor boundary, macOS-only `.authorizedAlways`.
+- **Verified:** SwiftLint 0 violations, `BUILD SUCCEEDED`, launched + `screencapture` shows the live glass dock above the system Dock (clock/date with live seconds, CPU 12% / RAM 77% rings, battery 94%, app icons, quick actions). Proof: `docs/shots/dock2.png`.
+- Code-reviewer agent dispatched on the new Swift.
+
+## 2026-06-30 — code-review fixes + interactive Music widget
+- Applied code-review findings: dock-edge changes now reposition the panel (`.dockEdgeChanged` notification), `CalendarService.start()` guard moved to top, battery charging read from `kIOPSIsChargingKey` (not on-AC), cached the mach host port, removed unused `NSRemindersUsageDescription`. (Skipped the reviewer's WeatherService auth "fix" — `.authorizedWhenInUse` is unavailable on macOS and `requestWhenInUseAuthorization` resolves to `.authorizedAlways` there, so current code is correct.)
+- **Interactive widgets** — widgets can now expand, not just act as buttons. Added the **Music** widget: now-playing (title/artist) + inline play-pause/next on the tile, click opens a full-player popover (large gradient artwork with animated waveform, prev/play-pause/next, source chip).
+- `MusicService` (`@MainActor @Observable`): controls Music.app + Spotify via AppleScript (system MediaRemote now-playing is locked down on macOS 27). Gates each player's literal `tell` script behind a running-bundle-ID check (a literal `tell application "Spotify"` won't compile if Spotify isn't installed) — caught and fixed during live validation. Added `NSAppleEventsUsageDescription`.
+- `DockSettings` merges newly-shipped widgets (music) into an existing stored list without re-adding user-removed ones.
+- **Verified:** SwiftLint 0 violations, BUILD SUCCEEDED, Music tile renders live in the bar (`docs/shots/dock3.png`); AppleScript path validated in-shell (correct delimited output, no app-launch side effect). Live now-playing needs a track playing + Cool Dock's first-run Automation permission grant.
+
+## 2026-06-30 — big batch: 6 new widgets, dock-hide, minimize, permissions guide
+Built in parallel (6 sub-agents, one widget each by file ownership) on top of lead-built foundation.
+- **Dock auto-hide awareness** (`DockVisibilityMonitor`): polls `CGWindowListCopyWindowInfo` for the Dock's on-screen window; when an auto-hidden Dock reveals, Cool Dock animates up by the Dock's height, settles back when it hides.
+- **Discreet minimize** (`DockChrome` + `DockView`): faint trailing chevron (0.22 opacity, 0.75 on hover) collapses the bar to a slim glass handle; click handle or menu-bar "Toggle Minimize" to restore.
+- **Permissions guide** (`PermissionsService` + Settings "Permissions" section): live status dots + one-click Grant/Settings for Calendar, Location, Automation (Music/Mail), Accessibility (emoji paste), with `x-apple.systempreferences:` deep links.
+- **Calendar urgency** (`CalendarWidget`): `TimelineView` countdown that shifts calm→teal→amber→pulsing-red as the event nears, then "Now"/relative.
+- **Music playlist** (`MusicService`/`MusicWidget`): expanded popover lists the current Music.app playlist's tracks (cap 40), highlights the playing track, click a row to play.
+- **New widgets** (each = Service + Widget): Folders (QuickLook thumbnail previews, NSOpenPanel add), Email (last 3 Mail.app inbox via AppleScript, gated on Mail running), Emoji (usage-ranked top-5, Cmd+V paste behind AXIsProcessTrusted, `orderFrontCharacterPalette` picker), Bookmarks (drop URLs, popover list), Ask Claude (`claude://claude.ai/new?q=` deep link, documented), 1Password (`op` CLI search + copy password to clipboard, auto-clear 2s, never logged).
+- **Keyable panel**: `KeyablePanel` (canBecomeKey=true, non-activating) so Ask Claude / 1Password text fields accept typing without activating the app.
+- **Overflow handling** (`DockView`): bar caps at screen width and scrolls horizontally when tiles exceed it (plain intrinsic HStack when it fits — a ScrollView has no intrinsic size and collapsed the panel; switch to a fixed-frame ScrollView only when overflowing, gated by a measured `BarWidthKey`).
+- **Fixes during integration:** `kAXTrustedCheckOptionPrompt` global → raw key string (Swift 6 concurrency); 1Password JSON decode snake_case → CodingKeys + file-scope structs; registry cyclomatic-complexity disable.
+- **Verified:** SwiftLint 0, BUILD SUCCEEDED, all 14 widgets render fitted within screen width (`docs/shots/dock6.png`); Email widget shows live inbox senders. Interactive popovers + permission-gated features (Music control, Mail read, emoji paste, 1Password copy) need their first-run OS permission grants.
+
+### Code-review fixes (2 MEDIUM + LOWs)
+- **1Password [MEDIUM]:** split stdout/stderr in the `op` run helper (merged pipe could concatenate a stderr notice into the copied password); status detection now reads stderr, password reads clean stdout. Added clipboard auto-clear after 90s (verifies value unchanged), `op` path fallback (`/opt/homebrew` → `/usr/local`), and a 60s process watchdog.
+- **Permissions [MEDIUM]:** `PermissionsService` is now a `CLLocationManagerDelegate` and re-`refresh()`es on auth change, so the Location row updates right after the prompt instead of only on reopen.
+- **Music:** replaced the invalid sort predicate with `first(where: playing) ?? first` (correct player selection + no UB); `play()` now escapes backslashes before quotes in the AppleScript literal.
+- **Bookmarks:** removed the duplicate `dropDestination`, leaving one `onDrop` handler (no double-insert / flicker).
+- Skipped the reviewer's `authorizedWhenInUse` mapping (same macOS false-positive — that case is unavailable on macOS; `.authorizedAlways` is the correct grant result). Deferred (LOW): Folders directory enumeration off-main, DockVisibilityMonitor multi-display coords.
+- Re-verified: SwiftLint 0, BUILD SUCCEEDED.
+
+## 2026-06-30 — rename to Dock+, dock-hide fix, click-to-minimize, widget upgrades
+Renamed app **Cool Dock → Dock+** (display name + product name; bundle id `ai.brito.cooldock` and Xcode target `CoolDock` kept stable). Parallel agents (5) + lead.
+- **Dock-hide fix:** rewrote `DockVisibilityMonitor` to track the pointer (`NSEvent.mouseLocation`) instead of the Dock's window — when auto-hide is on and the pointer hits the bottom edge, Dock+ lifts by the Dock height (from `com.apple.dock` tilesize) and stays up while the pointer is over the Dock/Dock+ band, dropping when it leaves. The CGWindowList approach wasn't lifting reliably.
+- **Click-to-minimize:** clicking the bar anywhere that isn't a card minimizes (WidgetTile now absorbs its own taps via an empty tap gesture; a clear background layer behind the tiles catches off-card taps).
+- **Settings:** drag-to-reorder enabled widgets (`List.onMove` + `DockSettings.move`), enable/disable via +/- rows, curated 10-widget default for fresh installs (`editMode` removed — iOS-only).
+- **Folders:** folder name shown under each icon; popover enlarged (300×~360) so ~8 files show before scrolling.
+- **Email:** archive ("archivebox") + delete ("trash") inline per row on hover; fetch now carries Mail's message `id`; archive moves to a mailbox named "Archive" (best-effort, account-dependent), delete → Trash; optimistic removal + refresh.
+- **Music:** idle (nothing playing) now a compact 1-unit tile that opens Apple Music on click; expands to full now-playing when a track plays.
+- **Docs site:** static site under `site/` for brito.ai/apps/dock-plus (features, widgets, instructions, FAQ, privacy) — built by agent.
+- **Dark mode:** verified — dock is dark glass in both appearances; Settings adapts; tokens are adaptive. Proof: `docs/shots/dockplus-light.png`, `docs/shots/dockplus-dark.png`.
+- **Verified:** SwiftLint 0, BUILD SUCCEEDED (one fix: `editMode` unavailable on macOS), Dock+ renders fitted; Music idle-compact + live Email confirmed on screen.
+
+### Code-review + doc-review fixes
+- **[HIGH] DockSettings:** the "append new kinds" migration re-added every disabled widget on each relaunch (disabling never stuck). Now records `seenWidgetKinds`; only kinds never seen before are auto-added, so disabled widgets stay disabled and a future new widget still surfaces once.
+- **Email:** archive now targets the message's own account's Archive mailbox (`account of mailbox of m`) with a global fallback — matters because there are 3 Mail accounts.
+- **Docs privacy policy (doc-reviewer):** corrected the load-bearing "only network call is Open-Meteo" claim across privacy.html + faq.html — the Weather widget also sends coordinates to Apple (`CLGeocoder` reverse-geocode for the city name). Disclosed Apple as a second recipient + link, added GDPR legal basis (consent), reframed cross-border transfers (Open-Meteo EU + Apple US), substantiated "approximate" (coarse `kCLLocationAccuracyKilometer`), added a retention note.
+- Deferred (noted): multi-display dock detection uses `NSScreen.main` (correct for single-display); Music drops a now-playing line if a title contains a tab (rare); Mail inbox ordering assumes newest-first.
+- Docs site verified rendering via Playwright (`docs/shots/dockplus-site-index.jpeg`). Re-verified: SwiftLint 0, BUILD SUCCEEDED.
+
+## 2026-06-30 — bug fixes round 2 + settings management + docs deploy
+- **Dock-hide lift [FIXED]:** root cause found by instrumenting the running app — `panel.animator().setFrameOrigin` silently no-ops on a non-activating borderless `NSPanel`, so the lift never moved despite correct logic (logged `inset=68 → originY=76` but `actual panel.y` stayed 8). Switched to direct `panel.setFrameOrigin`; verified `actual panel.y=76`. Logic itself proven separately via a standalone cursor-warp probe.
+- **Permissions [FIXED]:** stale state — status only read at launch/onAppear, so Accessibility-granted-while-running and already-determined Calendar/Location showed a dead "Grant". Added `PermissionsService.startPolling()` (1s refresh while Settings open) + `stopPolling()`, retained `EKEventStore` for the calendar request, and `CLLocationManagerDelegate` re-refresh.
+- **Settings redesign:** `TabView` (General / Widgets / Content). Fixed drag-to-reorder by making each reorderable `List` the primary scroll container (not nested in a ScrollView — that was why widget reorder didn't work). **Bookmarks & Folders**: list + remove + drag-reorder (added `move(from:to:)` to both services). 
+- **Quick Actions configurable:** new `QuickActionsService` with a 6-action catalog (screenshot, screenshot-to-clipboard, sleep display, lock screen, screen saver, empty trash), persisted enabled+order; `QuickActionsWidget` renders the enabled set; Content tab toggles + reorders them. (Fix: `Self` can't be referenced in a stored-property initializer → explicit `QuickActionsService.` type refs.)
+- **Docs deployed:** built Dock+ app-docs in the brito.ai house template (`brito.ai/Website/apps/dock-plus/` — index/support/faq/privacy/terms via shared `docs.css` + brand), added the Dock+ card to `/apps`. Deployed to Cloudflare Pages (`brito-ai-website`, token from Keychain). **Live + verified:** brito.ai/apps/dock-plus/ (200, "Dock+ — Help & Legal"), privacy/support/terms/faq all 200, `/apps` lists Dock+, daylura unaffected. Proof: `docs/shots/dockplus-britodocs.jpeg`.
+- Re-verified app: SwiftLint 0, BUILD SUCCEEDED, relaunched.
+- Open item: privacy page lists GDPR/PIPEDA/CCPA but not LGPD (Brazil) — minor, flagged for optional addition + counsel review.
+
+## 2026-06-30 — round 3 fixes: icon, permissions diagnosis, emoji, quick actions, email reminder, LGPD
+- **LGPD** added to privacy.html + faq (brito.ai + standalone) and redeployed; verified live.
+- **Permissions diagnosed by instrumentation:** logged raw statuses — Calendar is actually GRANTED (`cal=3` fullAccess; CalendarService fetches correctly), Location was `loc=0` (notDetermined — prompt not surfacing for the background app). Code signature is stable (Apple Development cert, Team YDC59VMG55), so rebuilds are NOT resetting grants. Fixes: `requestLocation()` now `NSApp.activate`s first so the prompt surfaces; added a "No prompt? Open System Settings ▸ Privacy" fallback link; live polling already reflects grants.
+- **Emoji picker [FIXED]:** `NSApp.orderFrontCharacterPalette` does nothing for a background app — now synthesizes Ctrl+Cmd+Space (key 49) to open the system emoji popover in the focused field (needs Accessibility; falls back to orderFront).
+- **1Password:** not a code bug — `op` resolves and works in-shell; the 1Password app's per-app CLI authorization lapsed. Made failure detection robust (checks stdout+stderr) so the widget shows needsAuth + Retry clearly; user re-approves the 1Password CLI prompt.
+- **Quick Actions catalog expanded** to 9: + Toggle Dark Mode, Mute/Unmute, Open Downloads (alongside screenshot, screenshot-to-clipboard, sleep, lock, screen saver, empty trash). `shortcuts` CLI present (25 user shortcuts) → Run-Shortcut picker offered as a follow-up.
+- **Email "Remind me later"** (agent): third hover button per row creates a Reminders.app follow-up in 3h.
+- **App icon [ADDED]:** generated a Dock+ icon (teal→indigo squircle, 3 widget tiles + a "+") via Core Graphics, sized 16–1024 into AppIcon.appiconset; compiled into the bundle (`AppIcon.icns`, `CFBundleIconName=AppIcon`). Proof: `docs/shots/app-icon-1024` (the master).
+- Verified: SwiftLint 0 (raised type_body_length for the 3-tab settings view), BUILD SUCCEEDED, relaunched.
+
+## 2026-06-30 — round 4: calendar registration, email native snooze, 1Password error surfacing
+- **Calendar grant [FIXED root cause]:** the user saw "Warp" (not "Dock+") in the Privacy ▸ Calendars list because I'd launched Dock+ *directly from the terminal* during instrumentation, so TCC attributed its requests to the responsible process (Warp). Normal `open`/Finder launches attribute to Dock+. New `grantCalendar()`/`grantLocation()` both fire the request (registers Dock+ in the TCC list) AND open the pane, so granting works even when the prompt doesn't surface for the background app.
+- **Email "Remind me later" → native Mail snooze:** replaced the Reminders.app reminder with Mail's built-in **Remind Me** (not in Mail's AppleScript dictionary → UI-scripted via System Events: select message by id, click Message ▸ Remind Me ▸ "Remind Me Tomorrow", fallback to first time option). Needs Accessibility + Automation(Mail); locale-dependent (English titles).
+- **1Password:** surfaced `op`'s real stderr/stdout in the widget's needsAuth/unavailable states (`lastError`, selectable) so the actual failure is visible — `op` works in-shell (attributed to Warp, which 1Password trusts) but Dock+ needs its own CLI-integration approval. Reworded to "Approve Dock+ in the 1Password CLI prompt, then retry".
+- Verified: SwiftLint 0, BUILD SUCCEEDED, relaunched via `open`.
+
+## 2026-06-30 — round 5: 1Password popover + calendar prompt root causes
+- **1Password widget "nothing opens" [FIXED]:** the `.onTapGesture {}` tap-absorber I'd added to `WidgetTile` (for click-to-minimize) sat inside `OnePasswordWidget`'s wrapping `Button` and stole the tap, so the popover never opened. Removed it — a tile's filled background already blocks taps from the minimize layer, so click-to-minimize still works in the inter-tile gaps. (This also un-breaks any Button-wrapped tile.)
+- **Calendar not registering Dock+ [ROOT CAUSE]:** instrumented `requestFullAccessToEvents` — it produced NO result (no granted, no throw, no tccd decision): it **hangs because a pure accessory (LSUIElement) app cannot present a TCC prompt**. Fix: `requestCalendar`/`requestLocation` now briefly promote the app to `.regular` (foreground) + activate so the prompt presents, then restore `.accessory`. CalendarService now reads the **live** `EKEventStore.authorizationStatus` on a 20s refresh, so a grant made via System Settings is reflected without relying on the (previously hung) request. Removed the hung launch-time request.
+- Verified: SwiftLint 0, BUILD SUCCEEDED, relaunched.
+
+## 2026-07-01 — Calendar prompt fix + editable favorite apps
+- **Calendar never appeared in Privacy → Calendars [FIXED]:** diag log confirmed `requestCalendar` had **never fired** (cal=0 on every launch, 0 request entries) — an app only shows in that list *after* it requests. The accessory (LSUIElement) app also can't present the TCC prompt while `.accessory`. `requestCalendar` now promotes `NSApp` to `.regular` + activates before requesting, then restores `.accessory` once the request resolves. (Re-established the fix noted earlier that wasn't in current code.)
+- **Favorite apps remove + reorder [ADDED]:** `AppsService.move(from:to:)` + a new editable "Favorite Apps" section in the Settings Content tab (icon + name rows, trash to remove, drag to reorder, "Add App…" row). General tab now points there.
+- Verified: SwiftLint 0, BUILD SUCCEEDED, relaunched.
+
+## 2026-07-01 — Calendar TCC real root cause (missing full-access usage key)
+- **Root cause found via 2 background research agents + live diag:** after the `.regular` promotion fix, `requestCalendar` stopped hanging but returned `granted=false status=0` instantly with no prompt. Cause: on macOS 14+ `requestFullAccessToEvents()` gates on **`NSCalendarsFullAccessUsageDescription`**, which was absent — only the legacy `NSCalendarsUsageDescription` was present, so tccd refuses the request pre-flight (no prompt, status stays .notDetermined, app never listed). Verified the built Info.plist was missing the key.
+- **Fix:** added `NSCalendarsFullAccessUsageDescription` to Info.plist (kept legacy key). Rebuilt — confirmed key is in the signed bundle. `tccutil reset Calendar ai.brito.cooldock` to clear stale state; relaunched the fixed build.
+- **Noted hygiene:** two bundles share the id (`/Applications/Dock+.app` = stale old build, DerivedData = fixed). Signing uses a real Apple Development cert so the designated requirement is stable → grant will persist across rebuilds. Recommend running one copy; stale /Applications copy should be replaced with the fixed build.
+- Verified: BUILD SUCCEEDED, key present in signed Info.plist, TCC reset OK, relaunched.
+
+## 2026-07-01
+- Site (all pages): added "in the works" blur/block overlay (`#itw-gate`) + footer signature → `An app by brito.ai (link) · © 2026`.
+
+## 2026-07-02 — Reminders widget + merged Clock/Weather
+- **Merged Clock + Weather into one widget:** new `ClockWeatherWidget` (time/date | divider | temp + condition + city). Removed `ClockWidget.swift`/`WeatherWidget.swift` and the `.clock`/`.weather` kinds; added `.clockWeather` (width 3.3). WeatherService unchanged. (Persisted widget layouts containing the old kinds fall back to the curated default on decode — acceptable for v0.1.)
+- **New Reminders widget (Apple Reminders via EventKit):** `RemindersService` (@MainActor @Observable) fetches incomplete reminders on a 30s poll; `fetchReminders` wrapped in `withCheckedContinuation`, mapped to a Sendable `ReminderItem` inside the completion to stay clean under strict concurrency; add / complete / reschedule (Today/Tomorrow/Next Week) re-resolve the live `EKReminder` by identifier on the main actor. `RemindersWidget` = compact count tile + popover (add field, complete circle, reschedule menu, "Enable Access" state). Added `.reminders` kind, registry line, app-startup `start()`, `NSRemindersFullAccessUsageDescription` (+ legacy) plist keys, and a Reminders row in Settings permissions + `PermissionsService.requestReminders()`.
+- **Note:** Reminders uses the same EventKit/TCC path as Calendar, which still won't prompt on this machine (macOS 26 beta). Widget degrades gracefully until that's resolved.
+- Verified: xcodegen OK, SwiftLint 0, BUILD SUCCEEDED, relaunched — screenshot shows merged Clock/Weather tile and the Reminders tile in the dock.
+
+## 2026-07-06 — Fix launch crash (Reminders / strict concurrency)
+- **Symptom:** Dock+ crashed ~0.3s after launch ("looks like it opens but doesn't"). Crash report `Dock+-2026-07-06-105716.ips`: `EXC_BREAKPOINT` in `_dispatch_assert_queue_fail` → `swift_task_checkIsolatedSwift` from `RemindersService.refresh()` closure, on queue `com.apple.eventkit.reminders.search`.
+- **Cause:** the `fetchReminders(matching:completion:)` completion closure inherited `@MainActor` isolation (enclosing class is `@MainActor`), but EventKit invokes it on a background queue. Swift 6's runtime executor assertion fails → hard trap.
+- **Fix:** marked the completion closure `@Sendable` so it's nonisolated. It only touches Sendable data (maps to `ReminderItem`, resumes the continuation), so this is safe; the main-actor hop happens correctly when the continuation returns into `refresh()`.
+- Verified: xcodegen OK, SwiftLint 0, BUILD SUCCEEDED, launched from /Applications — process stays alive through the reminders fetch, no new crash log. Installed build copied over `/Applications/Dock+.app`.
