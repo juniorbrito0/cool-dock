@@ -1,0 +1,85 @@
+{
+  "name": "Cool Dock",
+  "type": "app",
+  "goal": "A native macOS app (shipping as Dock+) that adds a floating second Dock of live widgets beside the system Dock.",
+  "progress": 60,
+  "status": "active",
+  "updated_at": "2026-07-07T14:20:00Z",
+  "done": [
+    "Built a floating glass NSPanel second-Dock above the system Dock, all-Spaces and edge-selectable",
+    "Shipped v0.2 with 14 widgets (Clock, Weather, Music, Calendar, Email, System, Battery, App launcher, Folders, Bookmarks, Emoji, Ask Claude, 1Password, Quick actions)",
+    "Made widgets interactive/expandable (Music player popover, Calendar urgency color-coding, in-tile typing)",
+    "Added Dock auto-hide awareness (lifts when the hidden Dock reveals), discreet minimize, and a Settings permissions guide",
+    "Added drag-to-reorder and a curated 10-widget default in Settings",
+    "Renamed Cool Dock to Dock+ (display name; bundle id and Xcode target kept stable)",
+    "Built a static docs site (features/widgets/instructions/FAQ/privacy) for brito.ai/apps/dock-plus",
+    "Verified dark mode, SwiftLint 0 violations, BUILD SUCCEEDED, and ran code-review + doc-review passes",
+    "Fixed a launch crash (Dock+ died ~0.3s after opening): the Reminders EventKit completion closure inherited @MainActor isolation but ran on a background queue, tripping Swift 6's executor assertion; marked it @Sendable, rebuilt, reinstalled over /Applications/Dock+.app, verified it stays alive through the reminders fetch",
+    "Added launch-at-login via SMAppService (auto-enables first run, self-heals the registered path to /Applications, Settings toggle); verified enabled via sfltool dumpbtm",
+    "New Dia Tabs widget: reads the Dia browser's open tabs over AppleScript and jumps to one on click (verified live reading 56 tabs); confirmed Warp exposes no scripting API so its tabs can't be read",
+    "Polish round: gave each widget tile its own frosted VisualEffectView backing so tiles read as solid cards against the 60%-transparent bar frame (fill wash 0.16/0.24), fixed the clock widget wrapping the AM/PM onto a second line, folders double-click-to-open-in-Finder + taller contents popover, tightened the gap to the system Dock, and a Reminders list picker (Today/All/specific list, default Today)",
+    "Initialized git and pushed the project to a private GitHub repo (juniorbrito0) as the first commit"
+  ],
+  "in_progress": [
+    "Widget breadth toward Cooldock parity (~40 target)",
+    "True 'beside the Dock' auto-positioning, per-widget config, multi-display handling"
+  ],
+  "waiting_on_me": [],
+  "questions": [],
+  "suggestions": [],
+  "would_do_differently": [],
+  "links": [],
+  "screenshots": [],
+  "tech": ["Swift 6", "SwiftUI", "AppKit", "EventKit", "ServiceManagement", "AppleScript", "XcodeGen", "macOS 14"],
+  "sections": {
+    "development": {
+      "status": "in_progress",
+      "notes": "Active build; 14 widgets working, SwiftLint 0 and BUILD SUCCEEDED verified."
+    },
+    "features": {
+      "status": "in_progress",
+      "notes": "Core widgets shipped; roadmap targets more widgets, reorder polish, launch-at-login."
+    },
+    "uiux": {
+      "status": "in_progress",
+      "notes": "Design system (graphite glass + electric-teal accent) built; dark mode verified; app icon still a placeholder."
+    },
+    "branding": {
+      "status": "in_progress",
+      "notes": "Named Dock+; distinctive glass identity in place; distinctive app icon not yet chosen."
+    },
+    "marketing": {
+      "status": "in_progress",
+      "notes": "Static docs site built under site/ for brito.ai/apps/dock-plus."
+    },
+    "sales": {
+      "status": "not_started",
+      "notes": "Freemium/IAP planned per house style but not yet built; app not submitted to the App Store."
+    }
+  },
+  "logo": null,
+  "brandbook": null,
+  "next_steps": [
+    "Design and pick a distinctive app icon to replace the current placeholder.",
+    "Implement true 'beside the Dock' auto-positioning by detecting the system Dock's size and edge.",
+    "Add a first-run onboarding flow for the OS permission prompts (Automation, Location, Calendar, Reminders, Accessibility).",
+    "Localize the UI to EN + PT-BR per house style before any public release.",
+    "Decide the distribution path (App Store submission with freemium/IAP, or direct download)."
+  ],
+  "insights": [
+    "Much of the app's value is gated behind first-run OS permissions (Automation, Location, Calendar, Accessibility); onboarding that walks users through these grants is essential or the widgets look broken.",
+    "14 widgets already overflow one screen — widget breadth toward ~40 parity should be balanced against a tight default set so the dock stays usable.",
+    "Heavy reliance on AppleScript bridges (Music, Mail) is fragile across macOS versions; those integrations need re-verification each OS update.",
+    "The app is unsigned/unsubmitted with a placeholder icon — the remaining distance to a shippable product is packaging and distribution, not core features.",
+    "Swift 6 strict concurrency turns actor-isolation mistakes into hard launch crashes, not warnings: any framework callback that fires on a background queue (EventKit, and similarly the AppleScript/NSWorkspace bridges) must be @Sendable/nonisolated. Audit the other services for the same pattern."
+  ],
+  "milestones": [
+    {"title": "v0.1 scaffold + working floating second dock", "status": "done"},
+    {"title": "v0.2 — 14 widgets + interactivity", "status": "done"},
+    {"title": "Rename to Dock+ and docs site", "status": "done"},
+    {"title": "Distinctive app icon", "status": "todo"},
+    {"title": "Platform polish (auto-position, launch-at-login, per-widget config)", "status": "in_progress"},
+    {"title": "Localization (EN + PT-BR)", "status": "todo"},
+    {"title": "Distribution / App Store submission", "status": "todo"}
+  ]
+}

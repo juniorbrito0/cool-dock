@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ — Dock+</title>
+  <meta name="description" content="Answers to common questions about Dock+: privacy, accounts, macOS version, Spotify support, 1Password, and whether it phones home." />
+  <link rel="stylesheet" href="styles.css" />
+<style id="itw-gate">
+/* Temporary pre-launch state — blur the page, block links, show a label. */
+html::before{content:"";position:fixed;inset:0;z-index:2147483000;background:rgba(9,11,16,.5);-webkit-backdrop-filter:blur(10px) saturate(115%);backdrop-filter:blur(10px) saturate(115%);}
+html,body{overflow:hidden !important;}
+body::after{content:"🚧  Dock+ is in the works\A Coming soon — check back shortly.";white-space:pre-line;text-align:center;line-height:1.6;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2147483001;pointer-events:none;max-width:min(90vw,440px);padding:26px 34px;border-radius:20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;font-size:clamp(16px,2.6vw,21px);font-weight:600;letter-spacing:.01em;color:#fff;background:rgba(18,20,27,.92);border:1px solid rgba(255,255,255,.16);box-shadow:0 24px 70px rgba(0,0,0,.5);}
+</style>
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="index.html"><span class="brand-mark"></span> Dock+</a>
+      <nav class="nav-links">
+        <a href="index.html">Features</a>
+        <a href="widgets.html">Widgets</a>
+        <a href="instructions.html">Get started</a>
+        <a href="faq.html" class="active">FAQ</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+      <button class="theme-toggle" aria-label="Toggle light and dark theme" title="Toggle theme">◐</button>
+      <a href="index.html#download" class="nav-cta">Download</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero wrap" style="padding-bottom: var(--s-6)">
+      <span class="eyebrow" style="justify-content:center">FAQ</span>
+      <h1 style="font-size: clamp(2.2rem, 5vw, var(--t-3xl))">Questions,<br /><span class="grad">answered</span></h1>
+      <p class="lede" style="margin: 0 auto">The things people ask most about Dock+ — privacy, accounts, compatibility and how the integrations work.</p>
+    </section>
+
+    <section class="section wrap" style="padding-top: var(--s-4)">
+      <div class="prose">
+
+        <details class="faq-item" open>
+          <summary>Is my data private?</summary>
+          <div class="faq-body"><p>Yes. Dock+ is on-device and data-light. There are no accounts, no analytics, no trackers and no telemetry. Calendar, Mail and Music data are read locally through macOS frameworks and AppleScript and never leave your Mac. The one exception is the Weather widget, which sends your approximate coordinates to two recipients — Open-Meteo (in the EU) to fetch local conditions, and Apple (via macOS Location Services) to turn the coordinates into a city name. Those weather lookups are the only data that leaves your Mac, and disabling the widget stops both. Full detail is in the <a href="privacy.html">privacy policy</a>.</p></div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Does it need an account or sign-in?</summary>
+          <div class="faq-body"><p>No. There's nothing to sign up for and no login. Download it, grant the permissions for the widgets you use, and you're done. Your settings live locally on your Mac.</p></div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Which version of macOS do I need?</summary>
+          <div class="faq-body"><p>macOS 14 Sonoma or later. Dock+ is a native SwiftUI app and runs on both Apple silicon and Intel Macs.</p></div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Does the Music widget work with Spotify?</summary>
+          <div class="faq-body"><p>Yes. The Music widget shows now-playing and offers play/pause and skip controls for both Apple Music and Spotify. The current-playlist listing in the popover is Apple Music only for now; with Spotify you'll see the now-playing track and controls.</p></div>
+        </details>
+
+        <details class="faq-item">
+          <summary>How does the 1Password widget work?</summary>
+          <div class="faq-body"><p>It uses 1Password's own command-line tool, <code>op</code>, which you authorize with Touch ID. You search your vault from the tile, and the password you choose is copied to your clipboard — entirely on your Mac. Nothing is transmitted by Dock+, and the clipboard auto-clears after 90 seconds so a copied secret doesn't linger. You'll need the 1Password app and its CLI integration enabled; see the <a href="instructions.html">setup guide</a>.</p></div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Does Dock+ phone home?</summary>
+          <div class="faq-body"><p>No. Dock+ has no servers of its own, no analytics and no auto-update beacon. Its only outbound requests come from the Weather widget, which sends your approximate coordinates to two recipients: Open-Meteo (in the EU) to fetch the forecast, and Apple (via macOS Location Services) to reverse-geocode the coordinates into a city name. Disable the Weather widget and Dock+ makes no network calls at all.</p></div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Why does it ask for so many permissions?</summary>
+          <div class="faq-body"><p>Each permission powers a specific widget — Calendar for your next event, Location for weather, Automation for Music and Mail, Accessibility for emoji paste. Dock+ only asks when you first use the widget that needs it, and skipping one just disables that single widget. The <a href="instructions.html">setup guide</a> explains each one and why it's needed.</p></div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Will it get in the way of my Dock or my windows?</summary>
+          <div class="faq-body"><p>No. Dock+ floats as a non-activating panel that never steals focus and never appears in cmd-tab. If you use an auto-hidden Dock, it lifts out of the way when the system Dock reveals. And you can collapse it to a slim handle whenever you want the screen back.</p></div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Can I choose which widgets show and where the bar sits?</summary>
+          <div class="faq-body"><p>Yes. Toggle any of the 14 widgets on or off, pick the screen edge, and add your favorite apps — all from Settings in the menu-bar menu. The bar scrolls if you enable more than fits your screen.</p></div>
+        </details>
+
+        <div class="cta-band" data-reveal style="margin-top: var(--s-8)">
+          <h2>Still curious?</h2>
+          <p class="lede">Read exactly what Dock+ does and doesn't do with your data.</p>
+          <div class="btn-row">
+            <a href="privacy.html" class="btn btn-primary">Read the privacy policy</a>
+            <a href="instructions.html" class="btn btn-ghost">Setup guide</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <nav class="footer-links">
+        <a href="index.html">Features</a>
+        <a href="widgets.html">Widgets</a>
+        <a href="instructions.html">Get started</a>
+        <a href="faq.html">FAQ</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+      <p class="footer-credit">An app by <a href="https://brito.ai">brito.ai</a> · © 2026</p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

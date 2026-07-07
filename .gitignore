@@ -1,0 +1,27 @@
+# Xcode / build
+*.xcodeproj
+DerivedData/
+build/
+.build/
+*.xcuserstate
+xcuserdata/
+
+# Secrets
+.env
+.env.*
+*.local
+*.pem
+*.key
+*.p8
+AuthKey_*.p8
+id_rsa*
+.secrets/
+config.local.json
+.claude/settings.local.json
+CLAUDE.local.md
+
+# macOS
+.DS_Store
+
+# Temp verification screenshots (may contain personal screen content)
+docs/shots/verify-*
