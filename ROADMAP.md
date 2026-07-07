@@ -11,7 +11,7 @@
 - Music playlist listing is Music.app only (Spotify shows now-playing only).
 - Live data behind OS permission gates (Automation for Music/Mail, Location for Weather, Calendar, Accessibility for emoji paste) until first-run grants — guided in Settings ▸ Permissions.
 
-## Next up (parity with Cooldock)
+## Next up (broader widget parity)
 **Widget breadth** — the real product has ~40. High-value adds, roughly in order:
 - Productivity: Reminders/Todos (EventKit), Pomodoro timer, hydration, notes, world clocks.
 - System/controls: audio output + volume, clipboard history, screenshot-to-shelf, media playback (now playing).

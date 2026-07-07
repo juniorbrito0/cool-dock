@@ -46,15 +46,15 @@ Dock+ builds with [XcodeGen](https://github.com/yonaskolb/XcodeGen) — the `.xc
 
 ```sh
 brew install xcodegen swiftlint      # one-time
-xcodegen generate                    # writes CoolDock.xcodeproj
-open CoolDock.xcodeproj               # build & run the "CoolDock" scheme in Xcode
+xcodegen generate                    # writes DockPlus.xcodeproj
+open DockPlus.xcodeproj               # build & run the "DockPlus" scheme in Xcode
 ```
 
 Or from the command line:
 
 ```sh
 xcodegen generate
-xcodebuild -project CoolDock.xcodeproj -scheme CoolDock -configuration Release build
+xcodebuild -project DockPlus.xcodeproj -scheme DockPlus -configuration Release build
 ```
 
 - **Stack:** SwiftUI, Swift 6 (strict concurrency), AppKit, EventKit, IOKit, CoreLocation, ServiceManagement. Deployment target macOS 14.

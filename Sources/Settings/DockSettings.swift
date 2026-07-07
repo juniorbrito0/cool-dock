@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension Notification.Name {
-    static let dockEdgeChanged = Notification.Name("CoolDock.dockEdgeChanged")
+    static let dockEdgeChanged = Notification.Name("DockPlus.dockEdgeChanged")
 }
 
 enum DockEdge: String, CaseIterable, Codable, Identifiable {

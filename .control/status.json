@@ -1,5 +1,5 @@
 {
-  "name": "Cool Dock",
+  "name": "Dock+",
   "type": "app",
   "goal": "A native macOS app (shipping as Dock+) that adds a floating second Dock of live widgets beside the system Dock.",
   "progress": 75,
@@ -11,7 +11,7 @@
     "Made widgets interactive/expandable (Music player popover, Calendar urgency color-coding, in-tile typing)",
     "Added Dock auto-hide awareness (lifts when the hidden Dock reveals), discreet minimize, and a Settings permissions guide",
     "Added drag-to-reorder and a curated 10-widget default in Settings",
-    "Renamed Cool Dock to Dock+ (display name; bundle id and Xcode target kept stable)",
+    "Set the user-facing name to Dock+ (internal identifiers kept stable)",
     "Built a static docs site (features/widgets/instructions/FAQ/privacy) for brito.ai/apps/dock-plus",
     "Verified dark mode, SwiftLint 0 violations, BUILD SUCCEEDED, and ran code-review + doc-review passes",
     "Fixed a launch crash (Dock+ died ~0.3s after opening): the Reminders EventKit completion closure inherited @MainActor isolation but ran on a background queue, tripping Swift 6's executor assertion; marked it @Sendable, rebuilt, reinstalled over /Applications/Dock+.app, verified it stays alive through the reminders fetch",
@@ -25,7 +25,7 @@
     "Took the Dock+ site live: removed the 'in the works' gate from brito.ai/apps/dock-plus, wired the DMG download + GitHub links, updated docs to 15 widgets incl. Dia Tabs + launch-at-login, deployed to Cloudflare Pages and verified (daylura unaffected)"
   ],
   "in_progress": [
-    "Widget breadth toward Cooldock parity (~40 target)",
+    "Widget breadth toward the ~40-widget parity target",
     "True 'beside the Dock' auto-positioning, per-widget config, multi-display handling"
   ],
   "waiting_on_me": [],

@@ -6,7 +6,7 @@ enum DiagLog {
     static let url = FileManager.default.homeDirectoryForCurrentUser
         .appendingPathComponent("Library/Logs/DockPlus.log")
 
-    private static let queue = DispatchQueue(label: "ai.brito.cooldock.diaglog")
+    private static let queue = DispatchQueue(label: "ai.brito.dockplus.diaglog")
 
     static func log(_ message: String) {
         NSLog("DOCKPLUS %@", message)

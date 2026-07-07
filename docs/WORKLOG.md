@@ -2,7 +2,7 @@
 
 ## 2026-07-07 — repo cleanup, rename to dock-plus, legal pass, contact email
 - **Removed from the public repo:** all screenshot images + the Claude build-tooling (`CLAUDE.md`, `.claude/`) — untracked (kept local) and git-ignored. The "Ask Claude" widget stays (it's a shipped feature). Dropped the README hero image + CLAUDE.md reference.
-- **Renamed the GitHub repo** `cool-dock` → `dock-plus` ("+" isn't a legal repo char; matches the DMG + site path). Updated every link across brito.ai, the repo `site/`, README, WORKLOG and status.json; verified the new `/releases/latest/download/Dock-Plus.dmg` URL returns 200. Kept the local folder + Xcode target (`CoolDock`) and bundle id (`ai.brito.cooldock`) stable.
+- **Renamed the GitHub repo** `cool-dock` → `dock-plus` ("+" isn't a legal repo char; matches the DMG + site path). Updated every link across brito.ai, the repo `site/`, README, WORKLOG and status.json; verified the new `/releases/latest/download/Dock-Plus.dmg` URL returns 200. Kept the local folder + Xcode target (`DockPlus`) and bundle id (`ai.brito.dockplus`) stable.
 - **Site:** GitHub *source* links now open in a new tab; support/contact email switched to **dockplus@brito.ai** (needs creating as a Workspace Group/alias to receive mail); removed the personal location (Guelph/Ontario) from privacy + terms.
 - **Legal pass (doc-reviewer):** Terms rewrote the License section — the old App Store TOS / Apple EULA / Apple third-party-beneficiary clauses were **factually false** for a direct GitHub download and contradicted the MIT license, so they're gone; added an Open-source section and strengthened the disclaimer for a free project (MIT "as is", **free of charge**, **at your own risk**, **CAD $0** aggregate-liability cap, explicit data-loss/credential carve-out). Governing law kept province-free per request. Privacy added the missing **Reminders** + **Dia Tabs** widgets and permission, a CCPA "we do not sell or share" line, and an open-source "inspect the code" statement. Deployed + verified live (daylura untouched).
 
@@ -27,7 +27,7 @@
 - Verified: xcodegen OK, SwiftLint 0, BUILD SUCCEEDED, installed to /Applications via ditto, relaunched, and confirmed each change on-screen (verification screenshots were kept out of git as they capture personal screen content).
 
 ## 2026-06-30 — v0.1 scaffold + working second dock
-- Bootstrapped macOS app from global config: XcodeGen `project.yml`, Swift 6 strict concurrency, `ai.brito.cooldock`, `LSUIElement` agent app with `MenuBarExtra`.
+- Bootstrapped macOS app from global config: XcodeGen `project.yml`, Swift 6 strict concurrency, `ai.brito.dockplus`, `LSUIElement` agent app with `MenuBarExtra`.
 - Design system: `Theme` tokens (graphite glass + electric-teal accent reserved for live/active states), `VisualEffectView` vibrancy.
 - Floating dock: borderless non-activating `NSPanel` (`DockWindowController`) above the system Dock level, all Spaces, edge-selectable; hosts `DockView` glass bar of widget tiles, auto-sizes via `NSHostingController` intrinsic sizing.
 - Widgets (7), protocol-driven via `WidgetKind` + `WidgetRegistry`: Clock, Weather, System (CPU/RAM gauges), Battery, Calendar, App launcher, Quick actions.
@@ -42,11 +42,11 @@
 - **Interactive widgets** — widgets can now expand, not just act as buttons. Added the **Music** widget: now-playing (title/artist) + inline play-pause/next on the tile, click opens a full-player popover (large gradient artwork with animated waveform, prev/play-pause/next, source chip).
 - `MusicService` (`@MainActor @Observable`): controls Music.app + Spotify via AppleScript (system MediaRemote now-playing is locked down on macOS 27). Gates each player's literal `tell` script behind a running-bundle-ID check (a literal `tell application "Spotify"` won't compile if Spotify isn't installed) — caught and fixed during live validation. Added `NSAppleEventsUsageDescription`.
 - `DockSettings` merges newly-shipped widgets (music) into an existing stored list without re-adding user-removed ones.
-- **Verified:** SwiftLint 0 violations, BUILD SUCCEEDED, Music tile renders live in the bar (`docs/shots/dock3.png`); AppleScript path validated in-shell (correct delimited output, no app-launch side effect). Live now-playing needs a track playing + Cool Dock's first-run Automation permission grant.
+- **Verified:** SwiftLint 0 violations, BUILD SUCCEEDED, Music tile renders live in the bar (`docs/shots/dock3.png`); AppleScript path validated in-shell (correct delimited output, no app-launch side effect). Live now-playing needs a track playing + Dock+'s first-run Automation permission grant.
 
 ## 2026-06-30 — big batch: 6 new widgets, dock-hide, minimize, permissions guide
 Built in parallel (6 sub-agents, one widget each by file ownership) on top of lead-built foundation.
-- **Dock auto-hide awareness** (`DockVisibilityMonitor`): polls `CGWindowListCopyWindowInfo` for the Dock's on-screen window; when an auto-hidden Dock reveals, Cool Dock animates up by the Dock's height, settles back when it hides.
+- **Dock auto-hide awareness** (`DockVisibilityMonitor`): polls `CGWindowListCopyWindowInfo` for the Dock's on-screen window; when an auto-hidden Dock reveals, Dock+ animates up by the Dock's height, settles back when it hides.
 - **Discreet minimize** (`DockChrome` + `DockView`): faint trailing chevron (0.22 opacity, 0.75 on hover) collapses the bar to a slim glass handle; click handle or menu-bar "Toggle Minimize" to restore.
 - **Permissions guide** (`PermissionsService` + Settings "Permissions" section): live status dots + one-click Grant/Settings for Calendar, Location, Automation (Music/Mail), Accessibility (emoji paste), with `x-apple.systempreferences:` deep links.
 - **Calendar urgency** (`CalendarWidget`): `TimelineView` countdown that shifts calm→teal→amber→pulsing-red as the event nears, then "Now"/relative.
@@ -66,7 +66,7 @@ Built in parallel (6 sub-agents, one widget each by file ownership) on top of le
 - Re-verified: SwiftLint 0, BUILD SUCCEEDED.
 
 ## 2026-06-30 — rename to Dock+, dock-hide fix, click-to-minimize, widget upgrades
-Renamed app **Cool Dock → Dock+** (display name + product name; bundle id `ai.brito.cooldock` and Xcode target `CoolDock` kept stable). Parallel agents (5) + lead.
+Set the app's user-facing name to **Dock+** (product + display name). Parallel agents (5) + lead.
 - **Dock-hide fix:** rewrote `DockVisibilityMonitor` to track the pointer (`NSEvent.mouseLocation`) instead of the Dock's window — when auto-hide is on and the pointer hits the bottom edge, Dock+ lifts by the Dock height (from `com.apple.dock` tilesize) and stays up while the pointer is over the Dock/Dock+ band, dropping when it leaves. The CGWindowList approach wasn't lifting reliably.
 - **Click-to-minimize:** clicking the bar anywhere that isn't a card minimizes (WidgetTile now absorbs its own taps via an empty tap gesture; a clear background layer behind the tiles catches off-card taps).
 - **Settings:** drag-to-reorder enabled widgets (`List.onMove` + `DockSettings.move`), enable/disable via +/- rows, curated 10-widget default for fresh installs (`editMode` removed — iOS-only).
@@ -121,7 +121,7 @@ Renamed app **Cool Dock → Dock+** (display name + product name; bundle id `ai.
 
 ## 2026-07-01 — Calendar TCC real root cause (missing full-access usage key)
 - **Root cause found via 2 background research agents + live diag:** after the `.regular` promotion fix, `requestCalendar` stopped hanging but returned `granted=false status=0` instantly with no prompt. Cause: on macOS 14+ `requestFullAccessToEvents()` gates on **`NSCalendarsFullAccessUsageDescription`**, which was absent — only the legacy `NSCalendarsUsageDescription` was present, so tccd refuses the request pre-flight (no prompt, status stays .notDetermined, app never listed). Verified the built Info.plist was missing the key.
-- **Fix:** added `NSCalendarsFullAccessUsageDescription` to Info.plist (kept legacy key). Rebuilt — confirmed key is in the signed bundle. `tccutil reset Calendar ai.brito.cooldock` to clear stale state; relaunched the fixed build.
+- **Fix:** added `NSCalendarsFullAccessUsageDescription` to Info.plist (kept legacy key). Rebuilt — confirmed key is in the signed bundle. `tccutil reset Calendar ai.brito.dockplus` to clear stale state; relaunched the fixed build.
 - **Noted hygiene:** two bundles share the id (`/Applications/Dock+.app` = stale old build, DerivedData = fixed). Signing uses a real Apple Development cert so the designated requirement is stable → grant will persist across rebuilds. Recommend running one copy; stale /Applications copy should be replaced with the fixed build.
 - Verified: BUILD SUCCEEDED, key present in signed Info.plist, TCC reset OK, relaunched.
 
